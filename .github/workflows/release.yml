@@ -6,11 +6,7 @@ on:
       - main
 
 jobs:
-  test:
-    uses: ./.github/workflows/test.yml
   release:
-    needs:
-      - test
     if: ${{ !startsWith(github.event.head_commit.message, 'bump:') }}
     runs-on: ubuntu-latest
     environment: production
