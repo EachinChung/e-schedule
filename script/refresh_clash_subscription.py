@@ -22,6 +22,7 @@ class Proxies(BaseModel):
     proxy_names_of_hk_transit_line: List[str]
     proxy_names_of_us_node: List[str]
     proxy_names_of_jp_node: List[str]
+    proxy_names_of_kr_node: List[str]
     proxy_names_of_tw_node: List[str]
 
 
@@ -118,6 +119,7 @@ async def get_clash_proxies() -> Proxies:
     proxy_names_of_hk_transit_line = []
     proxy_names_of_us_node = []
     proxy_names_of_jp_node = []
+    proxy_names_of_kr_node = []
     proxy_names_of_tw_node = []
 
     rsp = await get(setting.clash)
@@ -139,6 +141,8 @@ async def get_clash_proxies() -> Proxies:
             proxy_names_of_us_node.append(node_name)
         elif country == "JP":
             proxy_names_of_jp_node.append(node_name)
+        elif country == "KR":
+            proxy_names_of_kr_node.append(node_name)
         elif country == "TW":
             proxy_names_of_tw_node.append(node_name)
 
@@ -149,6 +153,7 @@ async def get_clash_proxies() -> Proxies:
         proxy_names_of_hk_transit_line=proxy_names_of_hk_transit_line,
         proxy_names_of_us_node=proxy_names_of_us_node,
         proxy_names_of_jp_node=proxy_names_of_jp_node,
+        proxy_names_of_kr_node=proxy_names_of_kr_node,
         proxy_names_of_tw_node=proxy_names_of_tw_node,
     )
 
@@ -167,9 +172,10 @@ async def refresh_clash_subscription():
 
     clash["proxy-groups"][24]["proxies"].extend(proxies.proxy_names_of_hk_special_line)
     clash["proxy-groups"][25]["proxies"].extend(proxies.proxy_names_of_hk_transit_line)
-    clash["proxy-groups"][26]["proxies"].extend(proxies.proxy_names_of_us_node)
-    clash["proxy-groups"][27]["proxies"].extend(proxies.proxy_names_of_jp_node)
-    clash["proxy-groups"][28]["proxies"].extend(proxies.proxy_names_of_tw_node)
+    clash["proxy-groups"][26]["proxies"].extend(proxies.proxy_names_of_tw_node)
+    clash["proxy-groups"][27]["proxies"].extend(proxies.proxy_names_of_us_node)
+    clash["proxy-groups"][28]["proxies"].extend(proxies.proxy_names_of_jp_node)
+    clash["proxy-groups"][29]["proxies"].extend(proxies.proxy_names_of_kr_node)
 
     clash_yaml = yaml.safe_dump(clash, allow_unicode=True, width=800)
     rdb = redis.client()
