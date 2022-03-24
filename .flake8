@@ -1,0 +1,17 @@
+[flake8]
+ignore = D203, W503, E203
+exclude =
+    .tox,
+    .git,
+    __pycache__,
+    *.pyc,
+    *.egg-info,
+    .cache,
+    .eggs,
+    venv,
+max-complexity = 10
+import-order-style = google
+application-import-names = flake8
+max-line-length=120
+show-source = True
+format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
