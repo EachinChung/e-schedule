@@ -16,7 +16,7 @@ class ClashConfig(BaseModel):
     socks_port: int = Field(7891, alias="socks-port")
     external_controller: str = Field("127.0.0.1:9090", alias="external-controller")
     allow_lan: bool = Field(False, alias="allow-lan")
-    log_level: str = Field("warning", alias="log-level")
+    log_level: str = Field("info", alias="log-level")
     proxy_groups: list = Field(alias="proxy-groups")
     mode: str = "rule"
     proxies: list

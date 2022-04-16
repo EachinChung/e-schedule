@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(checkin_daily, "cron", hour=0, minute=10)
-    scheduler.add_job(refresh_clash_config, "cron", hour=0, minute=10)
+    scheduler.add_job(refresh_clash_config, "interval", hours=1)
     scheduler.add_job(refresh_clash_subscription, "interval", minutes=10)
     scheduler.start()
 
