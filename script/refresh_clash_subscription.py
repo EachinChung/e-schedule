@@ -125,6 +125,12 @@ async def get_clash_proxies() -> Proxies:
     rsp = await get(setting.clash)
     assert rsp.ok
 
+    rdb = redis.client()
+    user_info = rsp.headers.get("subscription-userinfo")
+    if user_info is not None:
+        logging.info("subscription user info: %s", user_info)
+        await rdb.set("subscription:user:info", user_info, ex=timedelta(hours=1))
+
     proxies: List[dict] = yaml.safe_load(rsp.text).get("proxies", [])
     for proxy in proxies:
         node_name, country = node_name_matches_country(proxy["name"])

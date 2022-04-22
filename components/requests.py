@@ -5,8 +5,10 @@ from typing import Mapping, Optional, Union
 from uuid import UUID, uuid4
 
 import ujson as ujson
-from aiohttp import ClientSession, ClientTimeout, TCPConnector
+from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
 from aiohttp.typedefs import LooseCookies, LooseHeaders
+from multidict import CIMultiDictProxy
+from yarl import URL
 
 from components.enum import StrEnum
 from components.getsetter import GetSetTer
@@ -24,10 +26,20 @@ class Method(StrEnum):
 
 
 class Response:
-    def __init__(self, r_id: UUID, url: str, status_code: int, cookies: SimpleCookie, content: bytes, text: str):
+    def __init__(
+        self,
+        r_id: UUID,
+        url: URL,
+        status_code: int,
+        headers: CIMultiDictProxy[str],
+        cookies: SimpleCookie,
+        content: bytes,
+        text: str,
+    ):
         self.__r_id = r_id
-        self.__url: str = url
+        self.__url: URL = url
         self.__status_code = status_code
+        self.__headers = headers
         self.__cookies = cookies
         self.__content = content
         self.__text: str = text
@@ -49,7 +61,7 @@ class Response:
         return self.__r_id
 
     @property
-    def url(self) -> str:
+    def url(self) -> URL:
         return self.__url
 
     @property
@@ -59,6 +71,10 @@ class Response:
     @property
     def status_code(self) -> int:
         return self.__status_code
+
+    @property
+    def headers(self) -> CIMultiDictProxy[str]:
+        return self.__headers
 
     @property
     def cookies(self) -> SimpleCookie:
@@ -108,9 +124,19 @@ async def request(
             *args,
             **kwargs,
         ) as response:
+            response: ClientResponse
             content = await response.read()
             text = await response.text()
-            rsp = Response(r_id, response.url, response.status, response.cookies, content, text)
+
+            rsp = Response(
+                r_id=r_id,
+                url=response.url,
+                status_code=response.status,
+                headers=response.headers,
+                cookies=response.cookies,
+                content=content,
+                text=text,
+            )
 
             if not rsp.ok:
                 logging.warning(f"{rsp}, text: {rsp.text}")
