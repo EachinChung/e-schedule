@@ -1,11 +1,12 @@
 import asyncio
 import logging
+from typing import List
 
 import yaml
 from pydantic import BaseModel, Field
 
 from components.config import get_real_path
-from components.monitor import monitor
+from components.monitor import alert, monitor
 from components.requests import Response, close_requests, get, register_requests
 from components.retry import retry
 from setting import setting
@@ -20,7 +21,7 @@ class ClashConfig(BaseModel):
     proxy_groups: list = Field(alias="proxy-groups")
     mode: str = "rule"
     proxies: list
-    rules: list
+    rules: List[str]
 
 
 @retry(retries=5)
@@ -57,6 +58,12 @@ async def refresh_clash_config():
     result = await get_config()
     config = yaml.safe_load(result.text)
     config = ClashConfig(**config)
+
+    for rule in config.rules:
+        if "全球拦截" in rule:
+            await alert(f"clash 配置发现: {rule}")
+            return
+
     config.proxies = []
     config.proxy_groups = [
         {
