@@ -45,10 +45,12 @@ def retry(retries: int = 5, delay: Union[int, float] = 0, step: Union[int, float
 
             while times <= retries:
                 try:
-                    logging.info(f"call the {func.__name__} {times} times")
+                    logging.info("call the %s %s times", func.__name__, times)
                     return await func(*args, **kwargs)
-                except BaseException as err:
-                    logging.warning(f"call the {func.__name__} {times} times err: {err}, traceback: {format_exc()}")
+                except BaseException as err:  # noqa: PIE786
+                    logging.warning(
+                        "call the %s %s times err: %s, traceback: %s", func.__name__, times, err, format_exc()
+                    )
                     errors.append(err)
                     times += 1
                     if (delay > 0 or step > 0) and times < retries:
