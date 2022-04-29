@@ -30,6 +30,7 @@ def monitor(func):
         try:
             return await func(*args, **kwargs)
         except BaseException as err:
+            logging.exception(err)
             await alert(err)
 
     return do_func_and_alert
