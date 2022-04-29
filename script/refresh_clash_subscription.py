@@ -8,7 +8,7 @@ import yaml
 from pydantic import BaseModel
 
 from components import redis
-from components.config import load_yaml_config
+from components.config import async_load_yaml_config
 from components.monitor import monitor
 from components.requests import close_requests, get, register_requests
 from components.retry import retry
@@ -167,7 +167,7 @@ async def get_clash_proxies() -> Proxies:
 async def refresh_clash_subscription():
     logging.info("start refreshing the subscription of clash")
     proxies = await get_clash_proxies()
-    clash = load_yaml_config("../config/clash.yaml")
+    clash = await async_load_yaml_config("../config/clash.yaml")
 
     clash["proxies"] = proxies.proxies
     clash["proxy-groups"][1]["proxies"].extend(proxies.proxy_names)
