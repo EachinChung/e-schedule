@@ -112,7 +112,7 @@ async def request(
     **kwargs,
 ) -> Response:
     r_id = uuid4()
-    logging.info(f"{method} request({r_id}), url: {url}, params: {params}, data: {data}, json: {json}")
+    logging.info("%s request(%s), url: %s, params: %s, data: %s, json: %s", method, r_id, url, params, data, json)
     async with ClientSession(connector=pool.val, timeout=ClientTimeout(total=30), connector_owner=False) as session:
         async with getattr(session, method)(
             url,
@@ -139,7 +139,7 @@ async def request(
             )
 
             if not rsp.ok:
-                logging.warning(f"{rsp}, text: {rsp.text}")
+                logging.warning("%s, text: %s", rsp, rsp.text)
 
             return rsp
 

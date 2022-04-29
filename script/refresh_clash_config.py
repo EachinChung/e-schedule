@@ -7,7 +7,7 @@ from aiofile import async_open
 from pydantic import BaseModel, Field
 
 from components.config import get_real_path
-from components.monitor import alert, monitor
+from components.monitor import monitor
 from components.requests import Response, close_requests, get, register_requests
 from components.retry import retry
 from setting import setting

@@ -21,7 +21,7 @@ async def auth() -> LooseCookies:
         logging.error(msg)
         raise ValueError(msg)
 
-    logging.info(f"{setting.account.email} login success")
+    logging.info("%s login success", setting.account.email)
     return rsp.cookies
 
 
@@ -34,7 +34,7 @@ async def checkin(cookies: LooseCookies):
         logging.error(msg)
         raise ValueError(msg)
 
-    logging.info(f"{setting.account.email} checkin: {details.get('msg')}")
+    logging.info("%s checkin: %s", setting.account.email, details.get("msg"))
 
 
 @monitor

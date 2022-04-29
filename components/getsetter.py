@@ -1,4 +1,4 @@
-class GetSetTer(object):
+class GetSetTer:
     def __init__(self):
         self.__val = None
 

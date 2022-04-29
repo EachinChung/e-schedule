@@ -20,8 +20,8 @@ async def alert(msg):
         )
         assert rsp.status_code == 200
         assert rsp.json().get("errcode") == 0
-    except BaseException as e:
-        logging.error(f"wecom robot fail, err: {e}, msg: {msg}")
+    except BaseException as e:  # noqa: PIE786
+        logging.exception("wecom robot fail, err: %s, msg: %s", e, msg)
 
 
 def monitor(func):
@@ -29,7 +29,7 @@ def monitor(func):
     async def do_func_and_alert(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
-        except BaseException as err:
+        except BaseException as err:  # noqa: PIE786
             logging.exception(err)
             await alert(err)
 
