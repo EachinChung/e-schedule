@@ -4,8 +4,6 @@ from functools import wraps
 from traceback import format_exc
 from typing import Callable, List, Union
 
-from components.monitor import alert
-
 
 class MaxRetriesException(BaseException):
     def __init__(self, func: Callable, retries: int, errors: List[BaseException]):
@@ -58,7 +56,6 @@ def retry(retries: int = 5, delay: Union[int, float] = 0, step: Union[int, float
                         delay += step
             else:
                 err = MaxRetriesException(func, retries, errors)
-                await alert(err)
                 raise err
 
         return do_func_and_retries
