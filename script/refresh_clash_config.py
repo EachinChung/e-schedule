@@ -3,6 +3,7 @@ import logging
 from typing import List
 
 import yaml
+from aiofile import async_open
 from pydantic import BaseModel, Field
 
 from components.config import get_real_path
@@ -10,6 +11,39 @@ from components.monitor import alert, monitor
 from components.requests import Response, close_requests, get, register_requests
 from components.retry import retry
 from setting import setting
+
+PROXY_GROUP_SET = {
+    "🆎 AdBlock",
+    "🍃 应用净化",
+    "🎯 全球直连",
+    "📺 巴哈姆特",
+    "🌍 国外媒体",
+    "🧱 快速破墙",
+    "🔧 手动切换",
+    "🇰🇷 韩国节点",
+    "♻️ 自动选择",
+    "🇨🇳 台湾节点",
+    "🐟 漏网之鱼",
+    "🔯 故障转移",
+    "🌏 国内媒体",
+    "📺 哔哩哔哩",
+    "🛑 广告拦截",
+    "🍎 苹果服务",
+    "🎮 游戏平台",
+    "🇺🇲 美国节点",
+    "🇭🇰 香港节点",
+    "📹 油管视频",
+    "🔮 负载均衡",
+    "📲 电报消息",
+    "🇯🇵 日本节点",
+    "Ⓜ️ 微软云盘",
+    "🚀 节点选择",
+    "Ⓜ️ 微软服务",
+    "🎶 网易音乐",
+    "📢 谷歌FCM",
+    "🎥 奈飞视频",
+    "🛡️ 隐私防护",
+}
 
 
 class ClashConfig(BaseModel):
@@ -48,8 +82,8 @@ async def get_config() -> Response:
 
 async def save_config(config: ClashConfig):
     path = get_real_path("../config/clash.yaml")
-    with open(path, "w") as file:
-        file.write(yaml.safe_dump(config.dict(by_alias=True), allow_unicode=True, width=800))
+    async with async_open(path, "w") as file:
+        await file.write(yaml.safe_dump(config.dict(by_alias=True), allow_unicode=True, width=800))
 
 
 @monitor
@@ -59,10 +93,20 @@ async def refresh_clash_config():
     config = yaml.safe_load(result.text)
     config = ClashConfig(**config)
 
+    remote_config_error = ""
     for rule in config.rules:
-        if "全球拦截" in rule:
-            await alert(f"clash 配置发现: {rule}")
-            return
+        try:
+            proxy_group = rule.split(",")[2]
+        except IndexError as err:
+            if "MATCH" in rule:
+                continue
+            raise ValueError(f"rule {rule} is invalid") from err
+        else:
+            if proxy_group not in PROXY_GROUP_SET:
+                remote_config_error = rule
+                logging.error("clash 配置发现: %s", rule)
+
+    assert remote_config_error == "", f"clash 配置发现错误: {remote_config_error}"
 
     config.proxies = []
     config.proxy_groups = [
