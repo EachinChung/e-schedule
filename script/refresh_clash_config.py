@@ -93,7 +93,6 @@ async def refresh_clash_config():
     config = yaml.safe_load(result.text)
     config = ClashConfig(**config)
 
-    remote_config_error = ""
     for rule in config.rules:
         try:
             proxy_group = rule.split(",")[2]
@@ -102,11 +101,7 @@ async def refresh_clash_config():
                 continue
             raise ValueError(f"rule {rule} is invalid") from err
         else:
-            if proxy_group not in PROXY_GROUP_SET:
-                remote_config_error = rule
-                logging.error("clash 配置发现: %s", rule)
-
-    assert remote_config_error == "", f"clash 配置发现错误: {remote_config_error}"
+            assert proxy_group in PROXY_GROUP_SET, f"clash 配置发现错误: {rule}"
 
     config.proxies = []
     config.proxy_groups = [
