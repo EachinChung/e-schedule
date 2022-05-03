@@ -6,6 +6,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from components.redis import register_redis
 from components.requests import close_requests, register_requests
 from script.checkin_daily import checkin_daily
+from script.refresh_clash_config import refresh_clash_config
 from script.refresh_clash_subscription import refresh_clash_subscription
 
 if __name__ == "__main__":
@@ -21,6 +22,7 @@ if __name__ == "__main__":
 
     scheduler = AsyncIOScheduler()
     scheduler.add_job(checkin_daily, "cron", hour=0, minute=10)
+    scheduler.add_job(refresh_clash_config, "interval", days=15)
     scheduler.add_job(refresh_clash_subscription, "interval", minutes=10)
     scheduler.start()
 
