@@ -18,8 +18,8 @@ async def alert(msg):
             setting.monitor.wecom,
             json={"msgtype": "markdown", "markdown": {"content": MARKDOWN_MSG.format(mode=setting.mode, msg=msg)}},
         )
-        assert rsp.status_code == 200
-        assert rsp.json().get("errcode") == 0
+        assert rsp.status_code == 200, f"发送告警失败, {rsp.status_code}"
+        assert rsp.json().get("errcode") == 0, f"发送告警失败, {rsp.json()}"
     except BaseException as e:  # noqa: PIE786
         logging.exception("wecom robot fail, err: %s, msg: %s", e, msg)
 

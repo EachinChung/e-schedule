@@ -123,7 +123,7 @@ async def get_clash_proxies() -> Proxies:
     proxy_names_of_tw_node = []
 
     rsp = await get(setting.clash)
-    assert rsp.ok
+    assert rsp.ok, f"clash 订阅获取失败, {rsp.status_code}"
 
     rdb = redis.client()
     user_info = rsp.headers.get("subscription-userinfo")

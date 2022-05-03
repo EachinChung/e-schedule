@@ -76,7 +76,7 @@ async def get_config() -> Response:
             "new_name": "true",
         },
     )
-    assert rsp.ok
+    assert rsp.ok, f"获取配置失败, {rsp.status_code}"
     return rsp
 
 
