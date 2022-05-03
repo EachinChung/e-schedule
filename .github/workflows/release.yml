@@ -37,7 +37,7 @@ jobs:
           REMOTE_USER: ${{ secrets.SSH_USER }}
           REMOTE_PORT: ${{ secrets.SSH_PROT }}
           TARGET: ${{ secrets.TARGET }}
-          EXCLUDE: "/.git/,/config/,/venv/,/.github/,.flake8,.gitignore,pyproject.toml,body.md"
+          EXCLUDE: "/.git/,/config/,/venv/,/.github/,.flake8,.gitignore,pyproject.toml,poetry.lock,body.md"
       - name: restart e-schedule
         uses: garygrossgarten/github-action-ssh@release
         with:
