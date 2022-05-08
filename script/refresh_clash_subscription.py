@@ -182,7 +182,7 @@ async def refresh_clash_subscription():
     clash["proxy-groups"][28]["proxies"].extend(proxies.proxy_names_of_jp_node)
     clash["proxy-groups"][29]["proxies"].extend(proxies.proxy_names_of_kr_node)
 
-    clash_yaml = yaml.safe_dump(clash, allow_unicode=True, width=800)
+    clash_yaml = yaml.safe_dump(clash, allow_unicode=True, width=800, sort_keys=False)
     rdb = redis.client()
     await rdb.set("subscription:clash", clash_yaml, ex=timedelta(hours=1))
     logging.info("refresh clash subscription successful")
