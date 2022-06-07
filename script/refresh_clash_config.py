@@ -361,6 +361,7 @@ async def get_config() -> Response:
             "sort": "false",
             "new_name": "true",
         },
+        verify_ssl=False,
     )
     assert rsp.ok, f"获取配置失败, {rsp.status_code}"
     return rsp
