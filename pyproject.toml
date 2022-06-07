@@ -4,6 +4,10 @@ version = "1.2.1"
 description = "e-schedule"
 authors = ["Eachin <EachinChung@gmail.com>"]
 
+[[tool.poetry.source]]
+name = "tencent"
+url = "https://mirrors.cloud.tencent.com/pypi/simple"
+
 [tool.poetry.dependencies]
 python = "^3.9"
 aiohttp = "^3.8.1"
