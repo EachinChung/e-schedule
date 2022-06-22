@@ -1,7 +1,7 @@
 import asyncio
-import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from loguru import logger
 
 from components.redis import register_redis
 from components.requests import close_requests, register_requests
@@ -10,11 +10,8 @@ from script.refresh_clash_config import refresh_clash_config
 from script.refresh_clash_subscription import refresh_clash_subscription
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        filename="e-schedule.log",
-        level=logging.INFO,
-        format="[%(levelname)s] %(asctime)s - %(message)s",
-    )
+    logger.add("default.log", rotation="200KB", compression="zip", level="INFO")
+    logger.add("error.log", rotation="200KB", compression="zip", level="ERROR")
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(register_redis())

@@ -1,9 +1,9 @@
 import asyncio
-import logging
 from typing import List
 
 import yaml
 from aiofile import async_open
+from loguru import logger
 from pydantic import BaseModel, Field
 
 from components.config import get_real_path
@@ -375,7 +375,7 @@ async def save_config(config: ClashConfig):
 
 @monitor
 async def refresh_clash_config():
-    logging.info("start refreshing the config of clash")
+    logger.info("start refreshing the config of clash")
     result = await get_config()
     config = yaml.safe_load(result.text)
     rules: List[str] = config["rules"]
@@ -390,16 +390,10 @@ async def refresh_clash_config():
             assert proxy_group in PROXY_GROUP_SET, f"clash 配置发现错误: {rule}"
 
     await save_config(ClashConfig(**{"proxy-groups": PROXY_GROUPS, "rules": rules}))
-    logging.info("refresh clash config successful")
+    logger.info("refresh clash config successful")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        filename="refresh_clash_config.log",
-        level=logging.INFO,
-        format="[%(levelname)s] %(asctime)s - %(message)s",
-    )
-
     loop = asyncio.get_event_loop()
     loop.run_until_complete(register_requests())
     loop.run_until_complete(refresh_clash_config())

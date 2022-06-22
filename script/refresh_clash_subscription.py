@@ -1,10 +1,10 @@
 import asyncio
-import logging
 from datetime import timedelta
 from re import search
 from typing import List, Tuple
 
 import yaml
+from loguru import logger
 from pydantic import BaseModel
 
 from components import redis
@@ -128,7 +128,7 @@ async def get_clash_proxies() -> Proxies:
     rdb = redis.client()
     user_info = rsp.headers.get("subscription-userinfo")
     if user_info is not None:
-        logging.info("subscription user info: %s", user_info)
+        logger.info("subscription user info: {}", user_info)
         await rdb.set("subscription:user:info", user_info, ex=timedelta(hours=1))
 
     proxies: List[dict] = yaml.safe_load(rsp.text).get("proxies", [])
@@ -165,7 +165,7 @@ async def get_clash_proxies() -> Proxies:
 
 @monitor
 async def refresh_clash_subscription():
-    logging.info("start refreshing the subscription of clash")
+    logger.info("start refreshing the subscription of clash")
     proxies = await get_clash_proxies()
     clash = await async_load_yaml_config("../config/clash.yaml")
 
@@ -185,16 +185,10 @@ async def refresh_clash_subscription():
     clash_yaml = yaml.safe_dump(clash, allow_unicode=True, width=800, sort_keys=False)
     rdb = redis.client()
     await rdb.set("subscription:clash", clash_yaml, ex=timedelta(hours=1))
-    logging.info("refresh clash subscription successful")
+    logger.info("refresh clash subscription successful")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        filename="refresh_clash_subscription.log",
-        level=logging.INFO,
-        format="[%(levelname)s] %(asctime)s - %(message)s",
-    )
-
     loop = asyncio.get_event_loop()
     loop.run_until_complete(redis.register_redis())
     loop.run_until_complete(register_requests())

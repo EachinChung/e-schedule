@@ -1,7 +1,7 @@
 import asyncio
-import logging
 
 from aiohttp.typedefs import LooseCookies
+from loguru import logger
 
 from components.monitor import monitor
 from components.requests import close_requests, post, register_requests
@@ -18,10 +18,10 @@ async def auth() -> LooseCookies:
     details = rsp.json()
     if details.get("ret") != 1:
         msg = f"airport login failed {details.get('msg') or details}"
-        logging.error(msg)
+        logger.error(msg)
         raise ValueError(msg)
 
-    logging.info("%s login success", setting.account.email)
+    logger.info("{} login success", setting.account.email)
     return rsp.cookies
 
 
@@ -31,10 +31,10 @@ async def checkin(cookies: LooseCookies):
     details = rsp.json()
     if details.get("ret") != 1 and details.get("msg") != "您似乎已经签到过了...":
         msg = f"checkin failed {details.get('msg') or details}"
-        logging.error(msg)
+        logger.error(msg)
         raise ValueError(msg)
 
-    logging.info("%s checkin: %s", setting.account.email, details.get("msg"))
+    logger.info("{} checkin: {}", setting.account.email, details.get("msg"))
 
 
 @monitor
@@ -44,12 +44,6 @@ async def checkin_daily():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        filename="checkin_daily.log",
-        level=logging.INFO,
-        format="[%(levelname)s] %(asctime)s - %(message)s",
-    )
-
     loop = asyncio.get_event_loop()
     loop.run_until_complete(register_requests())
     loop.run_until_complete(checkin_daily())

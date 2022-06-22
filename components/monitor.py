@@ -1,5 +1,6 @@
-import logging
 from functools import wraps
+
+from loguru import logger
 
 from components.requests import post
 from setting import setting
@@ -21,7 +22,7 @@ async def alert(msg):
         assert rsp.status_code == 200, f"发送告警失败, {rsp.status_code}"
         assert rsp.json().get("errcode") == 0, f"发送告警失败, {rsp.json()}"
     except BaseException as e:  # noqa: PIE786
-        logging.exception("wecom robot fail, err: %s, msg: %s", e, msg)
+        logger.exception("wecom robot fail, err: {}, msg: {}", e, msg)
 
 
 def monitor(func):
@@ -30,7 +31,7 @@ def monitor(func):
         try:
             return await func(*args, **kwargs)
         except BaseException as err:  # noqa: PIE786
-            logging.exception(err)
+            logger.exception(err)
             await alert(err)
 
     return do_func_and_alert

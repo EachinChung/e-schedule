@@ -1,12 +1,12 @@
-import logging
 from enum import unique
 from http.cookies import SimpleCookie
 from typing import Mapping, Optional, Union
 from uuid import UUID, uuid4
 
-import ujson as ujson
+import orjson
 from aiohttp import ClientResponse, ClientSession, ClientTimeout, TCPConnector
 from aiohttp.typedefs import LooseCookies, LooseHeaders
+from loguru import logger
 from multidict import CIMultiDictProxy
 from yarl import URL
 
@@ -89,7 +89,7 @@ class Response:
         return self.__text
 
     def json(self) -> Union[list, dict]:
-        return ujson.loads(self.text)
+        return orjson.loads(self.text)
 
 
 async def register_requests():
@@ -112,7 +112,7 @@ async def request(
     **kwargs,
 ) -> Response:
     r_id = uuid4()
-    logging.info("%s request(%s), url: %s, params: %s, data: %s, json: %s", method, r_id, url, params, data, json)
+    logger.info("{} request({}), url: {}, params: {}, data: {}, json: {}", method, r_id, url, params, data, json)
     async with ClientSession(connector=pool.val, timeout=ClientTimeout(total=30), connector_owner=False) as session:
         async with getattr(session, method)(
             url,
@@ -139,7 +139,7 @@ async def request(
             )
 
             if not rsp.ok:
-                logging.warning("%s, text: %s", rsp, rsp.text)
+                logger.warning("{}, text: {}", rsp, rsp.text)
 
             return rsp
 

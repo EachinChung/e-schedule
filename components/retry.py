@@ -1,8 +1,9 @@
-import logging
 from asyncio import sleep
 from functools import wraps
 from traceback import format_exc
 from typing import Callable, List, Union
+
+from loguru import logger
 
 
 class MaxRetriesException(BaseException):
@@ -43,11 +44,11 @@ def retry(retries: int = 5, delay: Union[int, float] = 0, step: Union[int, float
 
             while times <= retries:
                 try:
-                    logging.info("call the %s %s times", func.__name__, times)
+                    logger.info("call the {} {} times", func.__name__, times)
                     return await func(*args, **kwargs)
                 except BaseException as err:  # noqa: PIE786
-                    logging.warning(
-                        "call the %s %s times err: %s, traceback: %s", func.__name__, times, err, format_exc()
+                    logger.warning(
+                        "call the {} {} times err: {}, traceback: {}", func.__name__, times, err, format_exc()
                     )
                     errors.append(err)
                     times += 1

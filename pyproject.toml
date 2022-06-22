@@ -15,8 +15,9 @@ aioredis = "^2.0.1"
 APScheduler = "^3.9.1"
 pydantic = "^1.9.0"
 PyYAML = "^6.0"
-ujson = "^5.2.0"
 aiofile = "^3.7.4"
+loguru = "^0.6.0"
+orjson = "^3.7.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
