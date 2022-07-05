@@ -18,7 +18,7 @@ from setting import setting
 class Proxies(BaseModel):
     proxies: List[dict]
     proxy_names: List[str]
-    proxy_names_of_hk_special_line: List[str]
+    proxy_names_of_high_speed_special_line: List[str]
     proxy_names_of_hk_node: List[str]
     proxy_names_of_us_node: List[str]
     proxy_names_of_jp_node: List[str]
@@ -115,7 +115,7 @@ def node_name_matches_country(node_name: str) -> Tuple:  # noqa: C901
 @retry(retries=5)
 async def get_clash_proxies() -> Proxies:
     proxy_names = []
-    proxy_names_of_hk_special_line = []
+    proxy_names_of_high_speed_special_line = []
     proxy_names_of_hk_node = []
     proxy_names_of_us_node = []
     proxy_names_of_jp_node = []
@@ -139,9 +139,12 @@ async def get_clash_proxies() -> Proxies:
         proxy["name"] = node_name
         proxy_names.append(node_name)
         if country == "HK":
-            if "专线" in node_name or "腾讯内网" in node_name:
-                proxy_names_of_hk_special_line.append(node_name)
+            # if "专线" in node_name or "腾讯内网" in node_name:
+            #     proxy_names_of_high_speed_special_line.append(node_name)
             proxy_names_of_hk_node.append(node_name)
+        elif country == "SG":
+            if "专线" in node_name or "腾讯内网" in node_name:
+                proxy_names_of_high_speed_special_line.append(node_name)
         elif country == "US":
             proxy_names_of_us_node.append(node_name)
         elif country == "JP":
@@ -154,7 +157,7 @@ async def get_clash_proxies() -> Proxies:
     return Proxies(
         proxies=proxies,
         proxy_names=proxy_names,
-        proxy_names_of_hk_special_line=proxy_names_of_hk_special_line,
+        proxy_names_of_high_speed_special_line=proxy_names_of_high_speed_special_line,
         proxy_names_of_hk_node=proxy_names_of_hk_node,
         proxy_names_of_us_node=proxy_names_of_us_node,
         proxy_names_of_jp_node=proxy_names_of_jp_node,
@@ -171,7 +174,7 @@ async def refresh_clash_subscription():
 
     clash["proxies"] = proxies.proxies
     clash["proxy-groups"][1]["proxies"].extend(proxies.proxy_names)
-    clash["proxy-groups"][2]["proxies"].extend(proxies.proxy_names_of_hk_special_line)
+    clash["proxy-groups"][2]["proxies"].extend(proxies.proxy_names_of_high_speed_special_line)
     clash["proxy-groups"][3]["proxies"].extend(proxies.proxy_names)
     clash["proxy-groups"][4]["proxies"].extend(proxies.proxy_names)
     clash["proxy-groups"][5]["proxies"].extend(proxies.proxy_names)
