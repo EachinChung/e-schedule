@@ -139,12 +139,12 @@ async def get_clash_proxies() -> Proxies:
         proxy["name"] = node_name
         proxy_names.append(node_name)
         if country == "HK":
-            # if "专线" in node_name or "腾讯内网" in node_name:
-            #     proxy_names_of_high_speed_special_line.append(node_name)
-            proxy_names_of_hk_node.append(node_name)
-        elif country == "SG":
             if "专线" in node_name or "腾讯内网" in node_name:
                 proxy_names_of_high_speed_special_line.append(node_name)
+            proxy_names_of_hk_node.append(node_name)
+        # elif country == "SG":
+        #     if "专线" in node_name or "腾讯内网" in node_name:
+        #         proxy_names_of_high_speed_special_line.append(node_name)
         elif country == "US":
             proxy_names_of_us_node.append(node_name)
         elif country == "JP":
