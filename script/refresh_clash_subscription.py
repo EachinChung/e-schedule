@@ -109,7 +109,7 @@ def node_name_matches_country(node_name: str) -> Tuple:  # noqa: C901
     if search(r"(CN|China|回国|中国|江苏|北京|上海|广州|深圳|杭州|常州|徐州|青岛|宁波|镇江|back)", node_name):
         return f"🇨🇳 {node_name}", "CN"
 
-    raise ValueError(f"clash 地区匹配失败 -> {node_name}")
+    return node_name, "UNKNOWN"
 
 
 @retry(retries=5)
