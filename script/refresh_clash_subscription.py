@@ -96,8 +96,9 @@ def node_name_matches_country(node_name: str) -> Tuple:  # noqa: C901
     if search(r"(PK|Pakistan|巴基斯坦)", node_name):
         return f"🇵🇰 {node_name}", "PK"
     if search(
-        r"(US|America|UnitedStates|美国|美|京美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|沪美)",  # noqa: E501
-        node_name,
+            r"(US|America|UnitedStates|美国|美|京美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|沪美)",
+            # noqa: E501
+            node_name,
     ):
         return f"🇺🇲 {node_name}", "US"
     if search(r"(VN|越南)", node_name):
@@ -131,6 +132,7 @@ async def get_clash_proxies() -> Proxies:
         logger.info("subscription user info: {}", user_info)
         await rdb.set("subscription:user:info", user_info, ex=timedelta(hours=1))
 
+    result: List[dict] = []
     proxies: List[dict] = yaml.safe_load(rsp.text).get("proxies", [])
     for proxy in proxies:
         try:
@@ -139,6 +141,7 @@ async def get_clash_proxies() -> Proxies:
             logger.warning(e)
             continue
 
+        result.append(proxy)
         node_name = node_name.replace("中继", "中转")
         node_name = node_name.replace("AIA", "腾讯内网")
         proxy["name"] = node_name
@@ -160,7 +163,7 @@ async def get_clash_proxies() -> Proxies:
             proxy_names_of_tw_node.append(node_name)
 
     return Proxies(
-        proxies=proxies,
+        proxies=result,
         proxy_names=proxy_names,
         proxy_names_of_high_speed_special_line=proxy_names_of_high_speed_special_line,
         proxy_names_of_hk_node=proxy_names_of_hk_node,
