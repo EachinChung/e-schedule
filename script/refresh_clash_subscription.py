@@ -133,7 +133,12 @@ async def get_clash_proxies() -> Proxies:
 
     proxies: List[dict] = yaml.safe_load(rsp.text).get("proxies", [])
     for proxy in proxies:
-        node_name, country = node_name_matches_country(proxy["name"])
+        try:
+            node_name, country = node_name_matches_country(proxy["name"])
+        except ValueError as e:
+            logger.error(e)
+            continue
+
         node_name = node_name.replace("中继", "中转")
         node_name = node_name.replace("AIA", "腾讯内网")
         proxy["name"] = node_name
